@@ -42,7 +42,7 @@ import SpriteKit
      
      - parameter sender: an <i>SKButton</i>
      */
-    optional func skButtonTouchBegan(sender: SKButton)
+    @objc optional func skButtonTouchBegan(sender: SKButton)
     /**
      Required: notifies reciever when an SKButton tap is released
      
@@ -267,14 +267,14 @@ class SKButton: SKNode {
         self.tintLayer.zPosition = SKButtonDefaults.zPosition + 1
         
         
-        self.onTapButton.hidden = true
-        self.label = SKButton.createLabel(buttonText)
+        self.onTapButton.isHidden = true
+        self.label = SKButton.createLabel(text: buttonText)
         
         
         super.init()
         
-        self.name = "SKButton-\(SKButtonDefaults.BUTTON_ID++)"
-        self.userInteractionEnabled = true
+        self.name = "SKButton-\(SKButtonDefaults.BUTTON_ID += 1)"
+        self.isUserInteractionEnabled = true
         
         addChild(self.defaultButton)
         addChild(self.onTapButton)
@@ -289,7 +289,7 @@ class SKButton: SKNode {
         self.zPosition = SKButtonDefaults.zPosition
         self.zRotation = SKButtonDefaults.zRotation
         self.setScale(SKButtonDefaults.scale)
-        self.hidden = SKButtonDefaults.hidden
+        self.isHidden = SKButtonDefaults.hidden
         self.accessibilityLabel = SKButtonDefaults.accessibilityLabel
         self.alpha = SKButtonDefaults.alpha
         self.tintColor = SKButtonDefaults.tintColor
@@ -467,7 +467,7 @@ class SKButton: SKNode {
      Fades the button out of the parent view
      */
     func hide() {
-        self.runAction(SKButtonAnimations.disappearAnimation) { () -> Void in
+        self.run(SKButtonAnimations.disappearAnimation) { () -> Void in
             self.removeFromParent()
         }
     }
@@ -478,7 +478,7 @@ class SKButton: SKNode {
      */
     func showIn(parentScene: SKScene) {
         parentScene.addChild(self)
-        self.runAction(SKButtonAnimations.appearAnimation)
+        self.run(SKButtonAnimations.appearAnimation)
     }
     
     /* ---- TOUCH ---- */
@@ -489,10 +489,10 @@ class SKButton: SKNode {
     - parameter touches: SKNode sent multitouch Set
     - parameter event:   SKNode send event
     */
-    internal override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        self.onTapButton.hidden = false
-        self.defaultButton.hidden = true
-        self.delegate?.skButtonTouchBegan?(self)
+    internal override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.onTapButton.isHidden = false
+        self.defaultButton.isHidden = true
+        self.delegate?.skButtonTouchBegan?(sender: self)
     }
     /**
      Built in SKNode touchesEnded override
@@ -500,11 +500,11 @@ class SKButton: SKNode {
      - parameter touches: SKNode sent multitouch Set
      - parameter event:   SKNode send event
      */
-    internal override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    internal override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (!self.touchCancelled){
-            self.defaultButton.hidden = false
-            self.onTapButton.hidden = true
-            self.delegate?.skButtonTouchEnded(self)
+            self.defaultButton.isHidden = false
+            self.onTapButton.isHidden = true
+            self.delegate?.skButtonTouchEnded(sender: self)
         }
         self.touchCancelled = false
     }
@@ -514,10 +514,10 @@ class SKButton: SKNode {
      - parameter touches: SKNode sent multitouch Set
      - parameter event:   SKNode send event
      */
-    internal override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    internal override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if (self.touchCancelled == false){
-            self.defaultButton.hidden = false
-            self.onTapButton.hidden = true
+            self.defaultButton.isHidden = false
+            self.onTapButton.isHidden = true
             self.touchCancelled = true
         }
     }
@@ -527,9 +527,9 @@ class SKButton: SKNode {
      - parameter touches: SKNode sent multitouch Set
      - parameter event:   SKNode send event
      */
-    internal override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        self.defaultButton.hidden = false
-        self.onTapButton.hidden = true
+    internal override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.defaultButton.isHidden = false
+        self.onTapButton.isHidden = true
         self.touchCancelled = true
     }
 }
@@ -540,8 +540,8 @@ class SKButton: SKNode {
 *  A simple struct for getting the device's screen size
 */
 struct Device {
-    private static let screen: CGSize = UIScreen.mainScreen().bounds.size
-    private static let screenDensity = UIScreen.mainScreen().nativeScale
+    private static let screen: CGSize = UIScreen.main.bounds.size
+    private static let screenDensity = UIScreen.main.nativeScale
     static let screenSize: CGSize = CGSize(width: Device.screen.width * Device.screenDensity, height: Device.screen.height * Device.screenDensity)
 }
 
@@ -553,16 +553,16 @@ private struct SKButtonDefaults {
     static let alpha: CGFloat = 1
     static var BUTTON_ID: Int = 0
     static let buttonText: String = ""
-    static var buttonColor: SKColor = SKColor.yellowColor()
+    static var buttonColor: SKColor = SKColor.yellow
     static let tapButtonColor: SKColor = SKColor(red: 0, green: 0, blue: 0, alpha: 0.5)
     static let font:String = "Chalkduster"
-    static let fontColor: UIColor = UIColor.blackColor()
+    static let fontColor: UIColor = UIColor.black
     static let fontSize: CGFloat = 32
     static let hidden: Bool = false
     static let position: CGPoint = CGPoint(x: Device.screenSize.width / 2, y: Device.screenSize.height / 2)
     static let scale: CGFloat = 1
     static let textOffset: CGPoint = CGPoint(x: 0, y: 0)
-    static let tintColor: UIColor = SKColor.clearColor()
+    static let tintColor: UIColor = SKColor.clear
     static let tintColorBlend: CGFloat = 1.0
     static let userInteractionEnabled = true
     static let zPosition: CGFloat = 1
@@ -572,8 +572,8 @@ private struct SKButtonDefaults {
  *  A struct containing animations used on an SKButton
  */
 private struct SKButtonAnimations {
-    static let appearAnimation: SKAction = SKAction.fadeInWithDuration(0.5)
-    static let disappearAnimation: SKAction = SKAction.fadeOutWithDuration(0.5)
+    static let appearAnimation: SKAction = SKAction.fadeIn(withDuration: 0.5)
+    static let disappearAnimation: SKAction = SKAction.fadeOut(withDuration: 0.5)
 }
 
 /// Simplified method to easily place SKButtons on screen
@@ -753,7 +753,7 @@ private extension UIColor {
             return newColor
             
         } else {
-            return UIColor.clearColor()
+            return UIColor.clear
         }
     }
 }
