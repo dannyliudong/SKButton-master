@@ -12,7 +12,7 @@ class GameScene: SKScene, SKButtonDelegate {
     
     var myFirstButton: SKButton!
     
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         /* Setup your scene here */
         
         //create just a default button
@@ -23,15 +23,15 @@ class GameScene: SKScene, SKButtonDelegate {
         self.addChild(self.myFirstButton)
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        /* Called when a touch begins */
         for touch in touches {
-            let _ = touch.locationInNode(self)
+            let _ = touch.location(in: self)
             
         }
     }
    
-    override func update(currentTime: CFTimeInterval) {
+    override func update(_ currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
     
